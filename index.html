@@ -1,78 +1,78 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <title>Ranking de Jogos</title>
-  <style>
-    body { font-family: Arial, sans-serif; text-align: center; }
-    .game { margin: 20px; }
-    button { margin-left: 10px; }
-  </style>
 </head>
 <body>
-  <h1>Ranking dos Melhores Jogos</h1>
-  <div id="ranking">
-    <div class="game">
-      Need For Speed: Most Wanted - Votos: <span id="Need_For_Speed_Most_Wanted">0</span>
-      <button onclick="vote('Need_For_Speed_Most_Wanted')">Votar</button>
-    </div>
-    <div class="game">
-      Final Fantasy 7 - Votos: <span id="Final_Fantasy_7">0</span>
-      <button onclick="vote('Final_Fantasy_7')">Votar</button>
-    </div>
-    <div class="game">
-      GTA 5 - Votos: <span id="GTA_5">0</span>
-      <button onclick="vote('GTA_5')">Votar</button>
-    </div>
-    <div class="game">
-      GTA: San Andreas - Votos: <span id="GTA_San_Andreas">0</span>
-      <button onclick="vote('GTA_San_Andreas')">Votar</button>
-    </div>
-    <div class="game">
-      Half-Life 1 - Votos: <span id="Half_Life_1">0</span>
-      <button onclick="vote('Half_Life_1')">Votar</button>
-    </div>
-    <div class="game">
-      Half-Life 2 - Votos: <span id="Half_Life_2">0</span>
-      <button onclick="vote('Half_Life_2')">Votar</button>
-    </div>
-    <div class="game">
-      Portal - Votos: <span id="Portal">0</span>
-      <button onclick="vote('Portal')">Votar</button>
-    </div>
-    <div class="game">
-      Portal 2 - Votos: <span id="Portal_2">0</span>
-      <button onclick="vote('Portal_2')">Votar</button>
-    </div>
-    <div class="game">
-      Resident Evil 4 - Votos: <span id="Resident_Evil_4">0</span>
-      <button onclick="vote('Resident_Evil_4')">Votar</button>
-    </div>
-    <div class="game">
-      Resident Evil 5 - Votos: <span id="Resident_Evil_5">0</span>
-      <button onclick="vote('Resident_Evil_5')">Votar</button>
-    </div>
-  </div>
 
-  <script>
-    async function vote(jogo) {
-      console.log("Tentando votar em:", jogo); // <-- log de teste
-      try {
-        const res = await fetch("/api/votar", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ jogo })
-        });
-        const data = await res.json();
+<h1>Ranking de Jogos</h1>
 
-        for (const key in data) {
-          const span = document.getElementById(key);
-          if (span) span.textContent = data[key];
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    }
-  </script>
+<div id="ranking">
+  <!-- Jogos serão renderizados aqui -->
+</div>
+
+<script>
+const nomesJogos = {
+  Half_Life_1: "Half-Life 1",
+  GTA_5: "GTA 5",
+  GTA_San_Andreas: "GTA: San Andreas",
+  Need_For_Speed: "Need For Speed: Most Wanted",
+  Final_Fantasy_7: "Final Fantasy 7",
+  Half_Life_2: "Half-Life 2",
+  Portal: "Portal",
+  Portal_2: "Portal 2",
+  Resident_Evil_4: "Resident Evil 4",
+  Resident_Evil_5: "Resident Evil 5"
+};
+
+async function fetchRanking() {
+  try {
+    const res = await fetch("/api/obter-ranking");
+    const data = await res.json();
+    updateRanking(data);
+  } catch (err) {
+    console.error("Erro ao carregar ranking:", err);
+    // Inicializa com zeros se der erro
+    updateRanking(Object.fromEntries(Object.keys(nomesJogos).map(k => [k, 0])));
+  }
+}
+
+async function vote(jogo, button) {
+  button.disabled = true;
+  try {
+    const res = await fetch("/api/votar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ jogo })
+    });
+    const data = await res.json();
+    updateRanking(data);
+  } catch (err) {
+    console.error("Erro ao votar:", err);
+  }
+  button.disabled = false;
+}
+
+function updateRanking(data) {
+  const rankingDiv = document.getElementById("ranking");
+  rankingDiv.innerHTML = "";
+
+  const jogosOrdenados = Object.entries(data).sort((a, b) => b[1] - a[1]);
+
+  jogosOrdenados.forEach(([id, votos]) => {
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <span id="${id}">${votos}</span> - ${nomesJogos[id]}
+      <button onclick="vote('${id}', this)">Votar</button>
+    `;
+    rankingDiv.appendChild(div);
+  });
+}
+
+// Carrega o ranking real ao abrir a página
+fetchRanking();
+</script>
+
 </body>
 </html>

@@ -1,55 +1,33 @@
 import admin from "firebase-admin";
 
-// Inicializa Firebase Admin apenas uma vez
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert({
       project_id: process.env.FIREBASE_PROJECT_ID,
-      private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
-      client_email: process.env.FIREBASE_CLIENT_EMAIL
+      client_email: process.env.FIREBASE_CLIENT_EMAIL,
+      private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n")
     })
   });
 }
 
 const db = admin.firestore();
-const docRef = db.collection("jogos").doc("ranking");
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
     const { jogo } = req.body;
+    const docRef = db.collection("jogos").doc("ranking");
 
     try {
-      // Verifica se o documento existe
-      const doc = await docRef.get();
-      if (!doc.exists) {
-        // Cria documento com todos os jogos zerados
-        await docRef.set({
-          "Need_For_Speed_Most_Wanted": 0,
-          "Final_Fantasy_7": 0,
-          "GTA_5": 0,
-          "GTA_San_Andreas": 0,
-          "Half_Life_1": 0,
-          "Half_Life_2": 0,
-          "Portal": 0,
-          "Portal_2": 0,
-          "Resident_Evil_4": 0,
-          "Resident_Evil_5": 0
-        });
-      }
+      // Incremento atômico seguro
+      await docRef.update({ [jogo]: admin.firestore.FieldValue.increment(1) });
 
-      // Incrementa +1 no jogo selecionado
-      await docRef.update({
-        [jogo]: admin.firestore.FieldValue.increment(1)
-      });
-
-      // Retorna os votos atualizados
-      const snapshot = await docRef.get();
-      res.status(200).json(snapshot.data());
-    } catch (error) {
-      console.error("Erro ao votar:", error);
-      res.status(500).json({ error: error.message });
+      const updatedDoc = await docRef.get();
+      res.status(200).json(updatedDoc.data());
+    } catch (err) {
+      console.error("Erro ao votar:", err);
+      res.status(500).json({ error: err.message });
     }
   } else {
-    res.status(405).json({ message: "Método não permitido" });
+    res.status(405).json({ error: "Método não permitido" });
   }
 }
