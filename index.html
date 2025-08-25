@@ -11,62 +11,87 @@
 </head>
 <body>
   <h1>Ranking dos Melhores Jogos</h1>
-  <div id="ranking"></div>
+  <div id="ranking">
+    <div class="game">
+      Need For Speed: Most Wanted - Votos: <span id="Need For Speed: Most Wanted">0</span>
+      <button onclick="vote('Need For Speed: Most Wanted')">Votar</button>
+    </div>
+    <div class="game">
+      Final Fantasy 7 - Votos: <span id="Final Fantasy 7">0</span>
+      <button onclick="vote('Final Fantasy 7')">Votar</button>
+    </div>
+    <div class="game">
+      GTA 5 - Votos: <span id="GTA 5">0</span>
+      <button onclick="vote('GTA 5')">Votar</button>
+    </div>
+    <div class="game">
+      GTA: San Andreas - Votos: <span id="GTA: San Andreas">0</span>
+      <button onclick="vote('GTA: San Andreas')">Votar</button>
+    </div>
+    <div class="game">
+      Half-Life 1 - Votos: <span id="Half-Life 1">0</span>
+      <button onclick="vote('Half-Life 1')">Votar</button>
+    </div>
+    <div class="game">
+      Half-Life 2 - Votos: <span id="Half-Life 2">0</span>
+      <button onclick="vote('Half-Life 2')">Votar</button>
+    </div>
+    <div class="game">
+      Portal - Votos: <span id="Portal">0</span>
+      <button onclick="vote('Portal')">Votar</button>
+    </div>
+    <div class="game">
+      Portal 2 - Votos: <span id="Portal 2">0</span>
+      <button onclick="vote('Portal 2')">Votar</button>
+    </div>
+    <div class="game">
+      Resident Evil 4 - Votos: <span id="Resident Evil 4">0</span>
+      <button onclick="vote('Resident Evil 4')">Votar</button>
+    </div>
+    <div class="game">
+      Resident Evil 5 - Votos: <span id="Resident Evil 5">0</span>
+      <button onclick="vote('Resident Evil 5')">Votar</button>
+    </div>
+  </div>
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
   <script>
-    // === CONFIGURAÇÃO DO FIREBASE ===
-  import { initializeApp } from "firebase/app";
-  import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyCNe2n7336JOD7IMoTl_4_6aZ7o8-eF9qU",
-  authDomain: "melhor-jogo-ba320.firebaseapp.com",
-  projectId: "melhor-jogo-ba320",
-  storageBucket: "melhor-jogo-ba320.firebasestorage.app",
-  messagingSenderId: "1047960341287",
-  appId: "1:1047960341287:web:68bdc19e5c0b4464623702",
-  measurementId: "G-J5EHTVHT0X"
+    // ==== CONFIGURAÇÃO DO FIREBASE ====
+    const firebaseConfig = {
+        apiKey: "AIzaSyCNe2n7336JOD7IMoTl_4_6aZ7o8-eF9qU",
+        authDomain: "melhor-jogo-ba320.firebaseapp.com",
+        projectId: "melhor-jogo-ba320",
+        storageBucket: "melhor-jogo-ba320.firebasestorage.app",
+        messagingSenderId: "1047960341287",
+        appId: "1:1047960341287:web:68bdc19e5c0b4464623702",
+        measurementId: "G-J5EHTVHT0X"
 };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    const docRef = db.collection("jogos").doc("ranking"); // único documento
+    const docRef = db.collection("jogos").doc("ranking"); // documento único
 
-    // Carrega ranking e mostra na tela
-    async function loadRanking() {
-      const snapshot = await docRef.get();
-      const data = snapshot.data(); // { "Half-Life 1": 0, "RE4": 0, ... }
-
-      const rankingDiv = document.getElementById("ranking");
-      rankingDiv.innerHTML = "";
-
-      // Ordena decrescente pelos votos
-      const ranking = Object.entries(data).sort((a,b) => b[1] - a[1]);
-
-      ranking.forEach(([nome, votos], i) => {
-        const div = document.createElement("div");
-        div.className = "game";
-        div.innerHTML = `${i+1}. ${nome} - Votos: ${votos} 
-          <button onclick="vote('${nome}')">Votar</button>`;
-        rankingDiv.appendChild(div);
-      });
-    }
-
-    // Incrementa voto
     async function vote(jogo) {
       await docRef.update({
         [jogo]: firebase.firestore.FieldValue.increment(1)
       });
       loadRanking();
+    }
+
+    async function loadRanking() {
+      const snapshot = await docRef.get();
+      const data = snapshot.data();
+
+      for (const jogo in data) {
+        const span = document.getElementById(jogo);
+        if (span) {
+          span.textContent = data[jogo];
+        }
+      }
     }
 
     loadRanking();
