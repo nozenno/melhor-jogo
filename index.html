@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Ranking dos Melhores Jogos</title>
+  <meta charset="UTF-8">
+  <title>Ranking de Jogos</title>
   <style>
-    body { font-family: Arial; text-align: center; }
+    body { font-family: Arial, sans-serif; text-align: center; }
     .game { margin: 20px; }
     button { margin-left: 10px; }
   </style>
@@ -12,43 +13,63 @@
   <h1>Ranking dos Melhores Jogos</h1>
   <div id="ranking"></div>
 
-  <script>
-    // Lista inicial de jogos
-    const games = [
-      { name: "Half-Life", votes: 0 },
-      { name: "Half-Life 2", votes: 0 },
-      { name: "Portal", votes: 0 },
-      { name: "Portal 2", votes: 0 },
-      { name: "Resident evil 4", votes: 0 },
-      { name: "Resident Evil 5", votes: 0 },
-      { name: "GTA San Andreas", votes: 0 },
-      { name: "Final Fantasy 7", votes: 0 },
-      { name: "GTA 5", votes: 0 },
-      { name: "Need For Speed: Most Wanted", votes: 0 }
-    ];
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
-    function render() {
-      // Ordena pelo número de votos
-      games.sort((a,b) => b.votes - a.votes);
+  <script>
+    // === CONFIGURAÇÃO DO FIREBASE ===
+  import { initializeApp } from "firebase/app";
+  import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyCNe2n7336JOD7IMoTl_4_6aZ7o8-eF9qU",
+  authDomain: "melhor-jogo-ba320.firebaseapp.com",
+  projectId: "melhor-jogo-ba320",
+  storageBucket: "melhor-jogo-ba320.firebasestorage.app",
+  messagingSenderId: "1047960341287",
+  appId: "1:1047960341287:web:68bdc19e5c0b4464623702",
+  measurementId: "G-J5EHTVHT0X"
+};
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const docRef = db.collection("jogos").doc("ranking"); // único documento
+
+    // Carrega ranking e mostra na tela
+    async function loadRanking() {
+      const snapshot = await docRef.get();
+      const data = snapshot.data(); // { "Half-Life 1": 0, "RE4": 0, ... }
 
       const rankingDiv = document.getElementById("ranking");
       rankingDiv.innerHTML = "";
 
-      games.forEach((game, index) => {
+      // Ordena decrescente pelos votos
+      const ranking = Object.entries(data).sort((a,b) => b[1] - a[1]);
+
+      ranking.forEach(([nome, votos], i) => {
         const div = document.createElement("div");
         div.className = "game";
-        div.innerHTML = `${index+1}. ${game.name} - Votos: ${game.votes} 
-                         <button onclick="vote(${index})">Votar</button>`;
+        div.innerHTML = `${i+1}. ${nome} - Votos: ${votos} 
+          <button onclick="vote('${nome}')">Votar</button>`;
         rankingDiv.appendChild(div);
       });
     }
 
-    function vote(index) {
-      games[index].votes++;
-      render();
+    // Incrementa voto
+    async function vote(jogo) {
+      await docRef.update({
+        [jogo]: firebase.firestore.FieldValue.increment(1)
+      });
+      loadRanking();
     }
 
-    render();
+    loadRanking();
   </script>
 </body>
 </html>
