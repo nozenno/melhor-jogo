@@ -56,6 +56,7 @@
 
   <script>
     async function vote(jogo) {
+      console.log("Tentando votar em:", jogo); // <-- log de teste
       try {
         const res = await fetch("/api/votar", {
           method: "POST",
