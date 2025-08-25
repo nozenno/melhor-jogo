@@ -8,9 +8,7 @@
 
 <h1>Ranking de Jogos</h1>
 
-<div id="ranking">
-  <!-- Jogos serão renderizados aqui -->
-</div>
+<div id="ranking"></div>
 
 <script>
 const nomesJogos = {
@@ -33,7 +31,6 @@ async function fetchRanking() {
     updateRanking(data);
   } catch (err) {
     console.error("Erro ao carregar ranking:", err);
-    // Inicializa com zeros se der erro
     updateRanking(Object.fromEntries(Object.keys(nomesJogos).map(k => [k, 0])));
   }
 }
@@ -58,19 +55,19 @@ function updateRanking(data) {
   const rankingDiv = document.getElementById("ranking");
   rankingDiv.innerHTML = "";
 
-  const jogosOrdenados = Object.entries(data).sort((a, b) => b[1] - a[1]);
+  const jogosOrdenados = Object.entries(data).sort((a,b)=> b[1]-a[1]);
 
   jogosOrdenados.forEach(([id, votos]) => {
+    const nome = nomesJogos[id] || id;
     const div = document.createElement("div");
     div.innerHTML = `
-      ${nomesJogos[id]} - <span id="${id}">${votos}</span>
+      ${nome} - <span id="${id}">${votos}</span>
       <button onclick="vote('${id}', this)">Votar</button>
     `;
     rankingDiv.appendChild(div);
   });
 }
 
-// Carrega o ranking real ao abrir a página
 fetchRanking();
 </script>
 
