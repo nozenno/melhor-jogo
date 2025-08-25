@@ -59,9 +59,12 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
   <script>
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
+  
     // ==== CONFIGURAÇÃO DO FIREBASE ====
     const firebaseConfig = {
-      apiKey: "AIzaSyCNe2n7336JOD7IMoTl_4_6aZ7o8-eF9qU",
+        apiKey: "AIzaSyCNe2n7336JOD7IMoTl_4_6aZ7o8-eF9qU",
         authDomain: "melhor-jogo-ba320.firebaseapp.com",
         projectId: "melhor-jogo-ba320",
         storageBucket: "melhor-jogo-ba320.firebasestorage.app",
