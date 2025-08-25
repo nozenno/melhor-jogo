@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ranking dos Melhores Jogos</title>
+  <style>
+    body { font-family: Arial; text-align: center; }
+    .game { margin: 20px; }
+    button { margin-left: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Ranking dos Melhores Jogos</h1>
+  <div id="ranking"></div>
+
+  <script>
+    // Lista inicial de jogos
+    const games = [
+      { name: "Jogo 1", votes: 0 },
+      { name: "Jogo 2", votes: 0 },
+      { name: "Jogo 3", votes: 0 },
+      { name: "Jogo 4", votes: 0 },
+      { name: "Jogo 5", votes: 0 },
+      { name: "Jogo 6", votes: 0 },
+      { name: "Jogo 7", votes: 0 },
+      { name: "Jogo 8", votes: 0 },
+      { name: "Jogo 9", votes: 0 },
+      { name: "Jogo 10", votes: 0 }
+    ];
+
+    function render() {
+      // Ordena pelo número de votos
+      games.sort((a,b) => b.votes - a.votes);
+
+      const rankingDiv = document.getElementById("ranking");
+      rankingDiv.innerHTML = "";
+
+      games.forEach((game, index) => {
+        const div = document.createElement("div");
+        div.className = "game";
+        div.innerHTML = `${index+1}. ${game.name} - Votos: ${game.votes} 
+                         <button onclick="vote(${index})">Votar</button>`;
+        rankingDiv.appendChild(div);
+      });
+    }
+
+    function vote(index) {
+      games[index].votes++;
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>
