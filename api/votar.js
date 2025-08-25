@@ -24,16 +24,16 @@ export default async function handler(req, res) {
       if (!doc.exists) {
         // Cria documento com todos os jogos zerados
         await docRef.set({
-          "Need For Speed: Most Wanted": 0,
-          "Final Fantasy 7": 0,
-          "GTA 5": 0,
-          "GTA: San Andreas": 0,
-          "Half-Life 1": 0,
-          "Half-Life 2": 0,
+          "Need_For_Speed_Most_Wanted": 0,
+          "Final_Fantasy_7": 0,
+          "GTA_5": 0,
+          "GTA_San_Andreas": 0,
+          "Half_Life_1": 0,
+          "Half_Life_2": 0,
           "Portal": 0,
-          "Portal 2": 0,
-          "Resident Evil 4": 0,
-          "Resident Evil 5": 0
+          "Portal_2": 0,
+          "Resident_Evil_4": 0,
+          "Resident_Evil_5": 0
         });
       }
 
