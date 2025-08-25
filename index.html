@@ -61,31 +61,36 @@
   <script>
     // ==== CONFIGURAÇÃO DO FIREBASE ====
     const firebaseConfig = {
-        apiKey: "AIzaSyCNe2n7336JOD7IMoTl_4_6aZ7o8-eF9qU",
+      apiKey: "AIzaSyCNe2n7336JOD7IMoTl_4_6aZ7o8-eF9qU",
         authDomain: "melhor-jogo-ba320.firebaseapp.com",
         projectId: "melhor-jogo-ba320",
         storageBucket: "melhor-jogo-ba320.firebasestorage.app",
         messagingSenderId: "1047960341287",
         appId: "1:1047960341287:web:68bdc19e5c0b4464623702",
-        measurementId: "G-J5EHTVHT0X"
-};
+        measurementId: "G-J5EHTVHT0X
+    };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
     const docRef = db.collection("jogos").doc("ranking"); // documento único
 
+    // Função que soma +1 ao jogo
     async function vote(jogo) {
-      await docRef.update({
-        [jogo]: firebase.firestore.FieldValue.increment(1)
-      });
-      loadRanking();
+      try {
+        await docRef.update({
+          [jogo]: firebase.firestore.FieldValue.increment(1)
+        });
+        loadRanking();
+      } catch (error) {
+        console.error("Erro ao votar:", error);
+      }
     }
 
+    // Carrega votos atuais e atualiza a tela
     async function loadRanking() {
       const snapshot = await docRef.get();
       const data = snapshot.data();
-
       for (const jogo in data) {
         const span = document.getElementById(jogo);
         if (span) {
@@ -94,6 +99,7 @@
       }
     }
 
+    // Inicializa os votos na tela
     loadRanking();
   </script>
 </body>
