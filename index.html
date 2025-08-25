@@ -63,7 +63,7 @@ function updateRanking(data) {
   jogosOrdenados.forEach(([id, votos]) => {
     const div = document.createElement("div");
     div.innerHTML = `
-      <span id="${id}">${votos}</span> - ${nomesJogos[id]}
+      ${nomesJogos[id]} - <span id="${id}">${votos}</span>
       <button onclick="vote('${id}', this)">Votar</button>
     `;
     rankingDiv.appendChild(div);
